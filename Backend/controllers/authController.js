@@ -17,8 +17,6 @@ const { getClientIp } = require("../utils/helpers");
 // REGISTER
 async function register(req, res) {
   try {
-    const ADMIN_EMAIL = "umar.vamatters@gmail.com";
-
     const { email, password, name } = req.body;
 
     if (!email || !password) {

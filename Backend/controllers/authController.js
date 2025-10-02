@@ -1,6 +1,10 @@
 const bcrypt = require("bcrypt");
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
+require("dotenv").config();
+
+const EMAIL_ADMIN = process.env.ADMIN_EMAIL;
+
 const logger = require("../utils/logger");
 const {
   readUsers,
@@ -13,6 +17,8 @@ const { getClientIp } = require("../utils/helpers");
 // REGISTER
 async function register(req, res) {
   try {
+    const ADMIN_EMAIL = "umar.vamatters@gmail.com";
+
     const { email, password, name } = req.body;
 
     if (!email || !password) {
@@ -36,14 +42,28 @@ async function register(req, res) {
     const secret = speakeasy.generateSecret({ name: `OTP-App (${email})` });
     const qrCodeDataUrl = await qrcode.toDataURL(secret.otpauth_url);
 
-    users.users[email] = {
-      id: email,
-      name: name || email,
-      password: hashedPassword,
-      secret: secret.base32,
-      qrCode: qrCodeDataUrl,
-      is_verified: false,
-    };
+    // If its admin create user with role admin other wise with role user
+    if (email === EMAIL_ADMIN) {
+      users.users[email] = {
+        id: email,
+        name: email,
+        password: hashedPassword,
+        secret: secret.base32,
+        qrCode: qrCodeDataUrl,
+        is_verified: false,
+        role: "admin",
+      };
+    } else {
+      users.users[email] = {
+        id: email,
+        name: email,
+        password: hashedPassword,
+        secret: secret.base32,
+        qrCode: qrCodeDataUrl,
+        is_verified: false,
+        role: "user",
+      };
+    }
 
     writeUsers(users);
 
@@ -56,6 +76,7 @@ async function register(req, res) {
       message: "User registered successfully",
       qrCode: qrCodeDataUrl,
       email,
+      role,
     });
   } catch (err) {
     invalidateUsersCache();
@@ -90,6 +111,8 @@ async function login(req, res) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    // const role = users.user[role];
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -108,6 +131,7 @@ async function login(req, res) {
       message: "Password valid, enter OTP",
       requiresOtp: user.is_verified,
       qrCode: user.qrCode,
+      role: user.role,
     });
   } catch (err) {
     await logger.logLogin(req.body.email, "error", "internal_server_error", {

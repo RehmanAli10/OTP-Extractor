@@ -64,6 +64,21 @@ async function logVerifyTotp(email, status, reason, meta = {}) {
   await appendLog({ action: "verify-totp", email, status, reason, meta });
 }
 
+async function logCreateUser(email, status, reason, meta = {}) {
+  await appendLog({ action: "create-user", email, status, reason, meta });
+}
+
+async function logUpdateUser(email, status, reason, meta = {}) {
+  await appendLog({ action: "update-user", email, status, reason, meta });
+}
+async function logDeleteUser(email, status, reason, meta = {}) {
+  await appendLog({ action: "delete-user", email, status, reason, meta });
+}
+
+async function logResetUser(email, status, reason, meta = {}) {
+  await appendLog({ action: "reset-user", email, status, reason, meta });
+}
+
 // ✅ Read all logs
 async function getLogs() {
   try {
@@ -110,4 +125,8 @@ module.exports = {
   logVerifyTotp,
   getLogs,
   clearLogs,
+  logCreateUser,
+  logUpdateUser,
+  logDeleteUser,
+  logResetUser,
 };

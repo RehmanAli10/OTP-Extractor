@@ -98,10 +98,9 @@ function getCacheDiagnostics(iterations = 100, action = null) {
       performance: {
         fileTime: `${fileTime}ms`,
         cacheTime: `${cacheTime}ms`,
-        speedup: `${(
-          ((fileTime - cacheTime) / fileTime) *
-          100
-        ).toFixed(0)}% faster`,
+        speedup: `${(((fileTime - cacheTime) / fileTime) * 100).toFixed(
+          0
+        )}% faster`,
       },
       data: {
         cacheUsers: cached ? Object.keys(cached.users || {}).length : 0,

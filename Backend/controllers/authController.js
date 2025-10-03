@@ -26,6 +26,13 @@ async function register(req, res) {
       return res.status(400).json({ message: "Email and password required" });
     }
 
+    if (password.length !== 9) {
+      logger.logRegister(email, "failure", "password_must_be_9_characters", {
+        ip: getClientIp(req),
+      });
+      return res.status(400).json({ message: "Password must be 9 characters" });
+    }
+
     const users = readUsers();
 
     // ISSUE HERE KINDLY CHECK, HERE WE CHECK USER BASE ON EMAIL IF
@@ -33,35 +40,26 @@ async function register(req, res) {
       logger.logRegister(email, "failure", "user_already_exists", {
         ip: getClientIp(req),
       });
-      return res.status(400).json({ message: "Invalid Password!" });
+      return res.status(400).json({ message: "User already exists!" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const secret = speakeasy.generateSecret({ name: `OTP-App (${email})` });
     const qrCodeDataUrl = await qrcode.toDataURL(secret.otpauth_url);
 
-    // If its admin create user with role admin other wise with role user
-    if (email === EMAIL_ADMIN) {
-      users.users[email] = {
-        id: email,
-        name: email,
-        password: hashedPassword,
-        secret: secret.base32,
-        qrCode: qrCodeDataUrl,
-        is_verified: false,
-        role: "admin",
-      };
-    } else {
-      users.users[email] = {
-        id: email,
-        name: email,
-        password: hashedPassword,
-        secret: secret.base32,
-        qrCode: qrCodeDataUrl,
-        is_verified: false,
-        role: "user",
-      };
-    }
+    // check if email is of admin then return admin otherwise user
+    const role = email === EMAIL_ADMIN ? "admin" : "user";
+
+    users.users[email] = {
+      id: email,
+      name: name || email,
+      password: hashedPassword,
+      secret: secret.base32,
+      qrCode: qrCodeDataUrl,
+      is_verified: false,
+      is_deleted: false,
+      role,
+    };
 
     writeUsers(users);
 
@@ -70,7 +68,7 @@ async function register(req, res) {
       has_2fa: true,
     });
 
-    res.json({
+    res.status(200).json({
       message: "User registered successfully",
       qrCode: qrCodeDataUrl,
       email,
@@ -78,6 +76,7 @@ async function register(req, res) {
     });
   } catch (err) {
     invalidateUsersCache();
+
     logger.logRegister(req.body.email, "error", "internal_server_error", {
       ip: getClientIp(req),
       error: err.message,
@@ -99,17 +98,23 @@ async function login(req, res) {
         .status(401)
         .json({ message: "Email and Paswword are required fields" });
     }
+
+    if (password.length !== 9) {
+      logger.logLogin(email, "failure", "password_must_be_9_characters", {
+        ip: getClientIp(req),
+      });
+      return res.status(400).json({ message: "Password must be 9 characters" });
+    }
+
     const users = readUsers();
     const user = users.users[email];
 
-    if (!user) {
+    if (!user || user.is_deleted) {
       await logger.logLogin(email, "failure", "user_not_found", {
         ip: getClientIp(req),
       });
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(404).json({ message: "Invalid email or password" });
     }
-
-    // const role = users.user[role];
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -150,10 +155,7 @@ async function verifyTotp(req, res) {
     const users = readUsers();
     const user = users.users[email];
 
-    console.log("user in verifyTotp", user);
-
     if (!user) {
-      console.log("if block working");
       logger.logVerifyTotp(email, "failure", "user_not_found", {
         ip: getClientIp(req),
         method: "totp",

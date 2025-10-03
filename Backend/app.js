@@ -10,6 +10,7 @@ const healthRoute = require("./routes/healthRoute.js");
 const authRoute = require("./routes/authRoute.js");
 const secretRoute = require("./routes/getSecretRoute.js");
 const ghlRoute = require("./routes/ghlRoute.js");
+const userRoute = require("./routes/userRoute.js");
 
 // MIDDLEWARES
 app.use(corsMiddleware);
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", healthRoute);
 app.use("/auth", authRoute);
 app.use("/auth", secretRoute);
+app.use("/user", userRoute);
 app.use("/ghl", ghlRoute);
 
 //LOCAL SERVER

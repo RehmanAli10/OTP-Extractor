@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", healthRoute);
 app.use("/auth", authRoute);
 app.use("/auth", secretRoute);
-app.use("/user", userRoute);
+app.use("/admin", userRoute);
 app.use("/ghl", ghlRoute);
 
 //LOCAL SERVER

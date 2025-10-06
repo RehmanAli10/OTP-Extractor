@@ -5,6 +5,41 @@ const qrcode = require("qrcode");
 const logger = require("../utils/logger");
 const { getClientIp } = require("../utils/helpers");
 
+exports.getAllUserController = async (req, res) => {
+  try {
+    // read users
+    const users = readUsers();
+
+    // if users not found
+    if (!users || !users.users || Object.keys(users.users).length === 0) {
+      logger.logGetUsers("", "failed", "no users found", {
+        ip: getClientIp(req),
+      });
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    logger.logGetUsers("", "success", "get all users", {
+      ip: getClientIp(req),
+      count: Object.keys(users.users).length,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      users: users.users,
+    });
+  } catch (err) {
+    await logger.logGetUsers("", "error", "internal_server_error", {
+      ip: getClientIp(req),
+      error: err.message,
+    });
+
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
+  }
+};
+
 exports.createUserController = async (req, res) => {
   try {
     const { email, password, role, name } = req.body;

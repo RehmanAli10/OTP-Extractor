@@ -5,15 +5,18 @@ const {
   updateUserController,
   deleteUserController,
   resetUserController,
+  getAllUserController,
 } = require("../controllers/userController");
 const sharedKeyAuth = require("../middlewares/sharedKeyAuth");
 
-router.post("/create", sharedKeyAuth, createUserController);
+router.get("/users", sharedKeyAuth, getAllUserController);
 
-router.patch("/update/:email", sharedKeyAuth, updateUserController);
+router.post("/create-user", sharedKeyAuth, createUserController);
 
-router.delete("/delete/:email", sharedKeyAuth, deleteUserController);
+router.patch("/update-user/:email", sharedKeyAuth, updateUserController);
 
-router.patch("/reset/:email", sharedKeyAuth, resetUserController);
+router.delete("/delete-user/:email", sharedKeyAuth, deleteUserController);
+
+router.patch("/reset-user/:email", sharedKeyAuth, resetUserController);
 
 module.exports = router;

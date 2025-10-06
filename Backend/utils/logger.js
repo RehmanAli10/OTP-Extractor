@@ -64,6 +64,10 @@ async function logVerifyTotp(email, status, reason, meta = {}) {
   await appendLog({ action: "verify-totp", email, status, reason, meta });
 }
 
+async function logGetUsers(email, status, reason, meta = {}) {
+  await appendLog({ action: "get-user", email, status, reason, meta });
+}
+
 async function logCreateUser(email, status, reason, meta = {}) {
   await appendLog({ action: "create-user", email, status, reason, meta });
 }
@@ -129,4 +133,5 @@ module.exports = {
   logUpdateUser,
   logDeleteUser,
   logResetUser,
+  logGetUsers,
 };

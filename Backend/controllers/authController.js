@@ -119,7 +119,7 @@ async function login(req, res) {
     }
 
     if (user.is_deleted) {
-      await logger.logLogin(email, "failure", "User not found", {
+      await logger.logLogin(email, "failure", "User is deleted", {
         ip: getClientIp(req),
       });
       return res.status(404).json({ message: "User not found" });

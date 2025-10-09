@@ -1,4 +1,3 @@
-// src/components/screens/ForgotPasswordOtpScreen.jsx
 import { useState } from "react";
 import Loader from "../ui/Loader";
 import OtpInput from "../ui/OtpInput";

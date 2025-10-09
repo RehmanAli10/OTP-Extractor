@@ -40,11 +40,9 @@ async function register(req, res) {
       logger.logRegister(email, "failure", "user_already_exists", {
         ip: getClientIp(req),
       });
-      return res
-        .status(400)
-        .json({
-          message: "Failed to register user already exist, kindly signin!",
-        });
+      return res.status(400).json({
+        message: "Failed to register user already exist, kindly signin!",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -117,7 +115,7 @@ async function login(req, res) {
       await logger.logLogin(email, "failure", "user_not_found", {
         ip: getClientIp(req),
       });
-      return res.status(404).json({ message: "Invalid email or password" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);

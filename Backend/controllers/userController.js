@@ -282,9 +282,9 @@ exports.resetUserController = async (req, res) => {
     user.secret = newSecret.base32;
     user.is_verified = false;
 
-    users.users[email] = user;
+    const newObj = { ...users, user };
 
-    writeUsers(users);
+    writeUsers(newObj);
 
     logger.logResetUser(email, "success", "user_reset", {
       ip: getClientIp(req),

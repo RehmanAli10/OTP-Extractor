@@ -26,7 +26,7 @@ async function register(req, res) {
       return res.status(400).json({ message: "Email and password required" });
     }
 
-    if (password.length !== 9) {
+    if (password.length < 9) {
       logger.logRegister(email, "failure", "password_must_be_9_characters", {
         ip: getClientIp(req),
       });
@@ -40,7 +40,11 @@ async function register(req, res) {
       logger.logRegister(email, "failure", "user_already_exists", {
         ip: getClientIp(req),
       });
-      return res.status(400).json({ message: "User already exists!" });
+      return res
+        .status(400)
+        .json({
+          message: "Failed to register user already exist, kindly signin!",
+        });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -99,7 +103,7 @@ async function login(req, res) {
         .json({ message: "Email and Paswword are required fields" });
     }
 
-    if (password.length !== 9) {
+    if (password.length < 9) {
       logger.logLogin(email, "failure", "password_must_be_9_characters", {
         ip: getClientIp(req),
       });
@@ -122,7 +126,7 @@ async function login(req, res) {
       await logger.logLogin(email, "failure", "invalid_password", {
         ip: getClientIp(req),
       });
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(404).json({ message: "Invalid email or password" });
     }
 
     await logger.logLogin(email, "success", "password_valid", {

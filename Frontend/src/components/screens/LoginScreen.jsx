@@ -6,7 +6,7 @@ import { API_ENDPOINTS, apiRequest } from "../../config/api";
 import styles from "../../styles/LoginForm/Login.module.css";
 import Button from "../ui/Button";
 import FormInputField from "../ui/FormInputField";
-import { handleErrors } from "../../utils/errorHandler";
+
 const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,7 +53,7 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
           toast.success("Account created! Please scan the QR code for 2FA");
           onShowQR(email, registerResponse.qrCode, newuserRole);
         } catch (registerError) {
-          toast.error(handleErrors(registerError));
+          toast.error(registerError);
         }
       } else if (error.message === "Invalid email or password") {
         toast.error("Invalid email or password");

@@ -46,16 +46,16 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
         onShowQR(email, response.qrCode, userRole);
       }
     } catch (error) {
-      if (error.message === "User not found") {
+      if (error.message.includes("User not found")) {
         try {
           const registerResponse = await handleAutoRegister(email, password);
           const newuserRole = "user";
           toast.success("Account created! Please scan the QR code for 2FA");
           onShowQR(email, registerResponse.qrCode, newuserRole);
-        } catch (registerError) {
-          toast.error(registerError);
+        } catch (error) {
+          toast.error(error);
         }
-      } else if (error.message === "Invalid email or password") {
+      } else if (error.message.includes("Invalid email or password")) {
         toast.error("Invalid email or password");
       }else {
         toast.error("Invalid request");

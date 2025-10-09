@@ -29,12 +29,20 @@ export const apiRequest = async (url, options = {}) => {
     const response = await fetch(url, { ...defaultOptions, ...options });
     const data = await response.json();
 
+    // if (!response.ok) {
+    //   throw new Error(data.message || `HTTP error! status: ${response.status}`);
+    // }
+
     if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error(data.message || "Invalid email or password");
-      }
-      throw new Error(data.message || `HTTP error! status: ${response.status}`);
-    }
+  if (response.status === 401) {
+    throw new Error(data.message || "Invalid email or password");
+  }
+  if (response.status === 404) {
+    throw new Error(data.message || "User not found");
+  }
+  throw new Error(data.message || `HTTP error! status: ${response.status}`);
+}
+
     return data;
   } catch (error) {
     console.error("API Request failed:", error.message);

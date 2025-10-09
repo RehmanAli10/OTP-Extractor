@@ -53,7 +53,7 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
           toast.success("Account created! Please scan the QR code for 2FA");
           onShowQR(email, registerResponse.qrCode, newuserRole);
         } catch (error) {
-          toast.error(error);
+          toast.error(error.message);
         }
       } else if (error.message.includes("Invalid email or password")) {
         toast.error("Invalid email or password");

@@ -111,8 +111,15 @@ async function login(req, res) {
     const users = readUsers();
     const user = users.users[email];
 
-    if (!user || user.is_deleted) {
-      await logger.logLogin(email, "failure", "user_not_found", {
+    if (!user) {
+      await logger.logLogin(email, "failure", "Invalid Email", {
+        ip: getClientIp(req),
+      });
+      return res.status(404).json({ message: "Invalid Email" });
+    }
+
+    if (user.is_deleted) {
+      await logger.logLogin(email, "failure", "User not found", {
         ip: getClientIp(req),
       });
       return res.status(404).json({ message: "User not found" });

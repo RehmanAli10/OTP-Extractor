@@ -1,4 +1,3 @@
-// src/components/screens/TotpVerificationScreen.jsx
 import { useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
 import Loader from "../ui/Loader";
@@ -67,21 +66,6 @@ const TotpVerificationScreen = ({ userEmail, onVerify, onBack }) => {
       <Loader isLoading={isLoading}>
         <div className={styles.authForm}>
           <OtpInput onComplete={handleSubmit} ref={otpInputRef} length={6} />
-
-          {/* <div className={styles.formFooter}>
-            <p>
-              Didn't receive code?
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  toast.success("Code resent successfully!");
-                }}
-              >
-                Resend
-              </a>
-            </p>
-          </div> */}
         </div>
       </Loader>
     </div>

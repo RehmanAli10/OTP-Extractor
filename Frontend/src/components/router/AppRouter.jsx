@@ -33,7 +33,7 @@ const AppRouter = () => {
   const handleShowQR = (email, qrCode,role) => {
     setCurrentEmail(email);
     setQrCodeData(qrCode);
-    setUserData((prev) => ({ ...prev, role: role || "role" }));
+    setUserData((prev) => ({ ...prev, role: role || "user" }));
     showScreen("qrSetup");
   };
 

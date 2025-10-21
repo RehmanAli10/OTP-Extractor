@@ -127,9 +127,9 @@ async function login(req, res) {
       const qrCodeDataUrl = await qrcode.toDataURL(secret.otpauth_url);
       const role = email === EMAIL_ADMIN ? "admin" : "user";
 
-      user = {
+      users.users[email] = {
         id: email,
-        name: name || email,
+        // name: name || email,
         password: hashedPassword,
         secret: secret.base32,
         qrCode: qrCodeDataUrl,
@@ -138,7 +138,6 @@ async function login(req, res) {
         role,
       };
 
-      users.users[email] = user;
       writeUsers(users);
 
       await logger.logLogin(email, "success", "auto_user_created", {

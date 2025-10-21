@@ -15,23 +15,25 @@ const AppRouter = () => {
 
   const showScreen = (screenName) => setCurrentScreen(screenName);
 
-  const handleLogin = async (email, password, requiresOtp) => {
+  const handleLogin = async (email, password, requiresOtp,role) => {
     if (!email) return;
     setCurrentEmail(email);
-    setUserData({ email, password });
+    setUserData({ email, password, role: role || "user" });
     setIsVerified(requiresOtp);
     showScreen("qrSetup");
   };
 
-  const handleShowTOTP = (email, requiresOtp) => {
+  const handleShowTOTP = (email, requiresOtp, role) => {
     setCurrentEmail(email);
+    setUserData((prev) => ({ ...prev, role: role || "user" }));
     setIsVerified(requiresOtp);
     showScreen("qrSetup");
   };
 
-  const handleShowQR = (email, qrCode) => {
+  const handleShowQR = (email, qrCode,role) => {
     setCurrentEmail(email);
     setQrCodeData(qrCode);
+    setUserData((prev) => ({ ...prev, role: role || "role" }));
     showScreen("qrSetup");
   };
 
@@ -56,7 +58,6 @@ const AppRouter = () => {
     }
   };
 
-  // Updated: Fetch OTP from backend instead of Google Apps Script
   const handleGHLRequest = async (ghlEmail) => {
     toast.loading("Fetching OTP from your email...");
 
@@ -142,7 +143,8 @@ const AppRouter = () => {
             onRequestOTP={handleGHLRequest}
             otp={userData?.generatedOtp}
             onCopyOTP={copyOTP}
-            // onRefreshOTP={generateNewOTP}
+            userEmail={currentEmail}
+            userRole={userData?.role || "user"}
           />
         );
       default:

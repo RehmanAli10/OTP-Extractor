@@ -1,5 +1,3 @@
-// src/components/screens/SuccessScreen.jsx
-
 import styles from "../../styles/SuccessScreen/Success.module.css"
 
 const SuccessScreen = ({ onRestart }) => {

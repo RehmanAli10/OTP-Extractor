@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState } from "react";
 import styles from "../../styles/QrCode/QrCode.module.css";
-import Button from "../ui/Button";
 import Loader from "../ui/Loader";
 import toast from "react-hot-toast";
 import { API_ENDPOINTS, apiRequest } from "../../config/api";
@@ -9,7 +8,6 @@ import FormHeader from "../ui/FormHeader";
 
 const QrSetupScreen = ({
   qrCodeData,
-  onContinue,
   userEmail,
   onVerify,
   onBack,

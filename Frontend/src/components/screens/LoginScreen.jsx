@@ -10,7 +10,6 @@ import FormInputField from "../ui/FormInputField";
 const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Create form methods once
   const methods = useForm();
 
   const handleAutoRegister = async (email, password) => {
@@ -20,6 +19,7 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
         email,
         password,
         name: email.split("@")[0],
+        role: "user",
       }),
     });
     return response;
@@ -27,7 +27,6 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
 
   const onSubmit = async ({ email, password }) => {
     if (!email || !password) return;
-
     setIsLoading(true);
 
     try {
@@ -36,25 +35,30 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
         body: JSON.stringify({ email, password }),
       });
 
+      const userRole = response.role || response.user?.role || "user";
+
       if (response.requiresOtp) {
         toast.success("Password valid. Please enter your TOTP code");
-        onShowTOTP(email, response.requiresOtp);
+        onShowTOTP(email, response.requiresOtp, userRole);
       } else {
         toast.success("Login successful");
-        onLogin(email, "", response.requiresOtp);
-        onShowQR(email, response.qrCode);
+        onLogin(email, "", response.requiresOtp, userRole);
+        onShowQR(email, response.qrCode, userRole);
       }
     } catch (error) {
-      if (error.message.includes("Invalid email or password")) {
+      if (error.message.includes("User not found")) {
         try {
           const registerResponse = await handleAutoRegister(email, password);
-          toast.success("Account created! Please scan the QR code");
-          onShowQR(email, registerResponse.qrCode);
-        } catch (registerError) {
-          toast.error(registerError.message);
+          const newuserRole = "user";
+          toast.success("Account created! Please scan the QR code for 2FA");
+          onShowQR(email, registerResponse.qrCode, newuserRole);
+        } catch (error) {
+          toast.error(error.message);
         }
-      } else {
-        toast.error(error.message);
+      } else if (error.message.includes("Invalid email or password")) {
+        toast.error("Invalid email or password");
+      }else {
+        toast.error("Invalid request");
       }
     } finally {
       setIsLoading(false);
@@ -72,13 +76,11 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
       </div>
 
       <Loader isLoading={isLoading} className={styles.loading}>
-        {/* Provide form context */}
         <FormProvider {...methods}>
           <form
             className={styles.authForm}
             onSubmit={methods.handleSubmit(onSubmit)}
           >
-            {/* Email Field */}
             <FormInputField
               name="email"
               label="Email Address"
@@ -94,7 +96,6 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
               }}
             />
 
-            {/* Password Field */}
             <FormInputField
               name="password"
               label="Password"

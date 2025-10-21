@@ -1,4 +1,3 @@
-// src/components/screens/NewPasswordScreen.jsx
 import { useState } from 'react'
 import Loader from '../ui/Loader'
 import styles from "../../styles/NewPassword/NewPassword.module.css"

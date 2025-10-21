@@ -1,9 +1,149 @@
-.loading {
-  pointer-events: none;
-  opacity: 0.7;
+.loaderContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.loading .primary-btn {
-  background: var(--white-20);
-  cursor: not-allowed;
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  z-index: 10;
+}
+
+.content {
+  opacity: 0.4;
+  filter: blur(2px);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+/* Modern Spinner */
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.spinnerRing {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--turquoise), #0095ff);
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.spinnerRing:nth-child(1) { animation-delay: -0.32s; }
+.spinnerRing:nth-child(2) { animation-delay: -0.16s; }
+.spinnerRing:nth-child(3) { animation-delay: -0.08s; }
+.spinnerRing:nth-child(4) { animation-delay: 0s; }
+
+/* Size variants */
+.spinner.small {
+  gap: 3px;
+}
+
+.spinner.small .spinnerRing {
+  width: 8px;
+  height: 8px;
+}
+
+.spinner.medium {
+  gap: 4px;
+}
+
+.spinner.medium .spinnerRing {
+  width: 12px;
+  height: 12px;
+}
+
+.spinner.large {
+  gap: 6px;
+}
+
+.spinner.large .spinnerRing {
+  width: 16px;
+  height: 16px;
+}
+
+/* Animation */
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Pulse animation alternative */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Modern gradient spinner alternative */
+.spinner.gradient {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, var(--turquoise));
+  animation: rotate 1s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner.gradient::before {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--white-10);
+}
+
+@keyframes rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Disabled state for buttons */
+.loaderContainer :global(.primary-btn),
+.loaderContainer :global(.secondary-btn) {
+  background: var(--white-20) !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+}
+
+/* Smooth transitions */
+.loaderContainer * {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

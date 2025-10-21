@@ -15,80 +15,86 @@ const {
 const { getClientIp } = require("../utils/helpers");
 
 // REGISTER
-async function register(req, res) {
-  try {
-    const { email, password, name } = req.body;
+// async function register(req, res) {
+//   try {
+//     const { email, password, name } = req.body;
 
-    if (!email || !password) {
-      logger.logRegister(email, "failure", "missing_credentials", {
-        ip: getClientIp(req),
-      });
-      return res.status(400).json({ message: "Email and password required" });
-    }
+//     if (!email || !password) {
+//       logger.logRegister(email, "failure", "missing_credentials", {
+//         ip: getClientIp(req),
+//       });
+//       return res.status(400).json({
+//         message: "Email and password required",
+//         isAuthenticated: false,
+//       });
+//     }
 
-    if (password.length < 9) {
-      logger.logRegister(email, "failure", "password_must_be_9_characters", {
-        ip: getClientIp(req),
-      });
-      return res.status(400).json({ message: "Password must be 9 characters" });
-    }
+//     if (password.length < 9) {
+//       logger.logRegister(email, "failure", "password_must_be_9_characters", {
+//         ip: getClientIp(req),
+//       });
+//       return res.status(400).json({
+//         message: "Password must be 9 characters",
+//         isAuthenticated: false,
+//       });
+//     }
 
-    const users = readUsers();
+//     const users = readUsers();
 
-    // ISSUE HERE KINDLY CHECK, HERE WE CHECK USER BASE ON EMAIL IF
-    if (users.users[email]) {
-      logger.logRegister(email, "failure", "user_already_exists", {
-        ip: getClientIp(req),
-      });
-      return res.status(400).json({
-        message: "Failed to register user already exist, kindly signin!",
-      });
-    }
+//     // ISSUE HERE KINDLY CHECK, HERE WE CHECK USER BASE ON EMAIL IF
+//     if (users.users[email]) {
+//       logger.logRegister(email, "failure", "user_already_exists", {
+//         ip: getClientIp(req),
+//       });
+//       return res.status(400).json({
+//         message: "Failed to register user already exist, kindly signin!",
+//       });
+//     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const secret = speakeasy.generateSecret({ name: `OTP-App (${email})` });
-    const qrCodeDataUrl = await qrcode.toDataURL(secret.otpauth_url);
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const secret = speakeasy.generateSecret({ name: `OTP-App (${email})` });
+//     const qrCodeDataUrl = await qrcode.toDataURL(secret.otpauth_url);
 
-    // check if email is of admin then return admin otherwise user
-    const role = email === EMAIL_ADMIN ? "admin" : "user";
+//     // check if email is of admin then return admin otherwise user
+//     const role = email === EMAIL_ADMIN ? "admin" : "user";
 
-    users.users[email] = {
-      id: email,
-      name: name || email,
-      password: hashedPassword,
-      secret: secret.base32,
-      qrCode: qrCodeDataUrl,
-      is_verified: false,
-      is_deleted: false,
-      role,
-    };
+//     users.users[email] = {
+//       id: email,
+//       name: name || email,
+//       password: hashedPassword,
+//       secret: secret.base32,
+//       qrCode: qrCodeDataUrl,
+//       is_verified: false,
+//       is_deleted: false,
+//       role,
+//     };
 
-    writeUsers(users);
+//     writeUsers(users);
 
-    logger.logRegister(email, "success", "new_user_created", {
-      ip: getClientIp(req),
-      has_2fa: true,
-    });
+//     logger.logRegister(email, "success", "new_user_created", {
+//       ip: getClientIp(req),
+//       has_2fa: true,
+//     });
 
-    res.status(200).json({
-      message: "User registered successfully",
-      qrCode: qrCodeDataUrl,
-      email,
-      role,
-    });
-  } catch (err) {
-    invalidateUsersCache();
+//     res.status(200).json({
+//       message: "User registered successfully",
+//       qrCode: qrCodeDataUrl,
+//       email,
+//       role,
+//     });
+//   } catch (err) {
+//     invalidateUsersCache();
 
-    logger.logRegister(req.body.email, "error", "internal_server_error", {
-      ip: getClientIp(req),
-      error: err.message,
-    });
+//     logger.logRegister(req.body.email, "error", "internal_server_error", {
+//       ip: getClientIp(req),
+//       error: err.message,
+//     });
 
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: err.message });
-  }
-}
+//     res
+//       .status(500)
+//       .json({ message: "Internal server error", error: err.message });
+//   }
+// }
 
 // LOGIN
 async function login(req, res) {
@@ -96,33 +102,70 @@ async function login(req, res) {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res
-        .status(401)
-        .json({ message: "Email and Paswword are required fields" });
+      return res.status(401).json({
+        message: "Email and Password are required fields",
+        isAuthenticated: false,
+      });
     }
 
     if (password.length < 9) {
       logger.logLogin(email, "failure", "password_must_be_9_characters", {
         ip: getClientIp(req),
       });
-      return res.status(400).json({ message: "Password must be 9 characters" });
+      return res.status(400).json({
+        message: "Password must be 9 characters",
+        isAuthenticated: false,
+      });
     }
 
     const users = readUsers();
     const user = users.users[email];
 
     if (!user) {
-      await logger.logLogin(email, "failure", "Invalid Email", {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const secret = speakeasy.generateSecret({ name: `OTP-App (${email})` });
+      const qrCodeDataUrl = await qrcode.toDataURL(secret.otpauth_url);
+      const role = email === EMAIL_ADMIN ? "admin" : "user";
+
+      user = {
+        id: email,
+        name: name || email,
+        password: hashedPassword,
+        secret: secret.base32,
+        qrCode: qrCodeDataUrl,
+        is_verified: false,
+        is_deleted: false,
+        role,
+      };
+
+      users.users[email] = user;
+      writeUsers(users);
+
+      await logger.logLogin(email, "success", "auto_user_created", {
         ip: getClientIp(req),
       });
-      return res.status(404).json({ message: "Invalid Email" });
+
+      return res.status(201).json({
+        message: "User registered successfully",
+        qrCode: qrCodeDataUrl,
+        email,
+        role,
+        isAuthenticated: false,
+        isRegistered: true,
+      });
     }
 
     if (user.is_deleted) {
       await logger.logLogin(email, "failure", "User is deleted", {
         ip: getClientIp(req),
       });
-      return res.status(404).json({ message: "User not found" });
+
+      return res.status(404).json({
+        message:
+          "Your account is no longer active. Please reach out to our support team if you believe this is a mistake.",
+        isAuthenticated: false,
+        isRegistered: true,
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -131,7 +174,11 @@ async function login(req, res) {
       await logger.logLogin(email, "failure", "invalid_password", {
         ip: getClientIp(req),
       });
-      return res.status(404).json({ message: "Invalid email or password" });
+      return res.status(404).json({
+        message: "Invalid password",
+        isAuthenticated: false,
+        isRegistered: true,
+      });
     }
 
     await logger.logLogin(email, "success", "password_valid", {
@@ -144,6 +191,8 @@ async function login(req, res) {
       requiresOtp: user.is_verified,
       qrCode: user.qrCode,
       role: user.role,
+      isAuthenticated: true,
+      isRegistered: true,
     });
   } catch (err) {
     await logger.logLogin(req.body.email, "error", "internal_server_error", {
@@ -151,9 +200,11 @@ async function login(req, res) {
       error: err.message,
     });
 
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: err.message });
+    res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+      isAuthenticated: false,
+    });
   }
 }
 

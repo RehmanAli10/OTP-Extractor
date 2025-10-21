@@ -228,9 +228,7 @@ exports.deleteUserController = async (req, res) => {
     user.is_deleted = true;
     users.users[email] = user;
 
-    const newObj = { ...users, user };
-
-    writeUsers(newObj);
+    writeUsers(users);
 
     logger.logDeleteUser(email, "success", "user_deleted_successfully", {
       ip: getClientIp(req),

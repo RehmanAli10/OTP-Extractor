@@ -286,7 +286,7 @@ async function cacheDiagnostics(req, res) {
 }
 
 module.exports = {
-  register,
+  // register,
   login,
   verifyTotp,
   cacheDiagnostics,

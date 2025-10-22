@@ -1,4 +1,0 @@
-{
-    "appService.defaultWebAppToDeploy": "/subscriptions/c61df8e5-1e6f-4c53-8c9d-9157ae507b84/resourceGroups/OTP-Sharing-App/providers/Microsoft.Web/sites/otpsharingapp",
-    "appService.deploySubpath": "Backend"
-}

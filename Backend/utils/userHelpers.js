@@ -1,14 +1,70 @@
+// // utils/userHelpers.js
+// const fs = require("fs");
+// const path = require("path");
+// const cache = require("./userCache");
+
+// const usersFilePath = path.join(__dirname, "../user.json");
+
+// const CACHE_KEY = "users_data";
+// const CACHE_TTL = 180000; // 3 minutes
+
+// // ✅ Read users.json (with cache support)
+// function readUsers() {
+//   try {
+//     const cachedUsers = cache.get(CACHE_KEY);
+//     if (cachedUsers) return cachedUsers;
+
+//     if (!fs.existsSync(usersFilePath)) {
+//       const emptyUsers = { users: {} };
+//       fs.writeFileSync(usersFilePath, JSON.stringify(emptyUsers, null, 2));
+//       cache.set(CACHE_KEY, emptyUsers, CACHE_TTL);
+//       return emptyUsers;
+//     }
+
+//     const data = fs.readFileSync(usersFilePath, "utf8");
+//     const users = JSON.parse(data);
+
+//     cache.set(CACHE_KEY, users, CACHE_TTL);
+//     return users;
+//   } catch (error) {
+//     console.error("❌ Error reading users file:", error);
+//     return { users: {} };
+//   }
+// }
+
+// // ✅ Write users.json (with cache update)
+// function writeUsers(users) {
+//   try {
+//     fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+//     cache.set(CACHE_KEY, users, CACHE_TTL);
+//     return true;
+//   } catch (error) {
+//     console.error("❌ Error writing users file:", error);
+//     return false;
+//   }
+// }
+
+
+
 // utils/userHelpers.js
 const fs = require("fs");
 const path = require("path");
 const cache = require("./userCache");
 
-const usersFilePath = path.join(__dirname, "../user.json");
+// ✅ Determine persistent data directory
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "../data");
+
+// ✅ Ensure the directory exists
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// ✅ Define full path to users.json inside data dir
+const usersFilePath = path.join(DATA_DIR, "users.json");
 
 const CACHE_KEY = "users_data";
 const CACHE_TTL = 180000; // 3 minutes
 
-// ✅ Read users.json (with cache support)
 function readUsers() {
   try {
     const cachedUsers = cache.get(CACHE_KEY);
@@ -23,7 +79,6 @@ function readUsers() {
 
     const data = fs.readFileSync(usersFilePath, "utf8");
     const users = JSON.parse(data);
-
     cache.set(CACHE_KEY, users, CACHE_TTL);
     return users;
   } catch (error) {
@@ -32,7 +87,6 @@ function readUsers() {
   }
 }
 
-// ✅ Write users.json (with cache update)
 function writeUsers(users) {
   try {
     fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
@@ -43,6 +97,7 @@ function writeUsers(users) {
     return false;
   }
 }
+
 
 // ✅ Get specific user by email
 function getUserByEmail(email) {

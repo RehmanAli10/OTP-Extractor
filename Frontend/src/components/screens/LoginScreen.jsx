@@ -12,58 +12,147 @@ const LoginScreen = ({ onLogin, onShowTOTP, onShowQR }) => {
 
   const methods = useForm();
 
-  const handleAutoRegister = async (email, password) => {
-    const response = await apiRequest(API_ENDPOINTS.REGISTER, {
-      method: "POST",
-      body: JSON.stringify({
-        email,
-        password,
-        name: email.split("@")[0],
-        role: "user",
-      }),
-    });
-    return response;
-  };
+  // const handleAutoRegister = async (email, password) => {
+  //   const response = await apiRequest(API_ENDPOINTS.REGISTER, {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       email,
+  //       password,
+  //       name: email.split("@")[0],
+  //       role: "user",
+  //     }),
+  //   });
+  //   return response;
+  // };
+
+  // const onSubmit = async ({ email, password }) => {
+  //   if (!email || !password) return;
+  //   setIsLoading(true);
+
+  //   try {
+  //     const response = await apiRequest(API_ENDPOINTS.LOGIN, {
+  //       method: "POST",
+  //       body: JSON.stringify({ email, password }),
+  //     });
+
+  //     const userRole = response.role || "user";
+  //     const requiresOtp = response.requiresOTP ?? response.requiresOtp ?? false;
+
+  //     if (response.isAuthenticated && response.isRegistered && requiresOtp) {
+  //       toast.success("Password valid. Please enter your OTP");
+  //       onShowTOTP(email, requiresOtp, userRole);
+  //     } else if (response.isAuthenticated && response.isRegistered) {
+  //       toast.success("Login successful");
+  //       onLogin(email, response.requiresOtp, userRole);
+  //     } else if (response.message?.includes("User registered successfully")) {
+  //       toast.success("Account created successfully! Please scan the QR code");
+  //       if(response.qrCode){
+  //         onShowQR(email,response.qrCode,userRole);
+  //       }
+  //     } else if (
+  //       !response.isAuthenticated &&
+  //       response.isRegistered&&
+  //       response.message?.includes("account is no longer active")
+  //     ) {
+  //       toast.error("Your account is no longer active. Please contact support if this is a mistake.");
+  //     } else if (
+  //       !response.isAuthenticated &&
+  //       response.isRegistered&&
+  //       response.message === "Invalid password"
+  //     ) {
+  //       toast.error("Invalid password. Please try again");
+  //     } else {
+  //       toast.error(response.message || "Unexpected error");
+  //     }
+  //   } catch (error) {
+  //     if (error.status === 400) {
+  //       if (error.message === "Password must be 9 characters") {
+  //         toast.error("Password must be exactly 9 characters long");
+  //       } else {
+  //         toast.error("Invalid request");
+  //       }
+  //     } else if (error.status === 401) {
+  //       if (error.message === "Email and Password are required fields") {
+  //         toast.error("Email and password are required");
+  //       } else {
+  //         toast.error("Authentication failed");
+  //       }
+  //     } else if (error.status === 404) {
+  //       toast.error("User not found");
+  //     } else if (error.status === 500) {
+  //       toast.error("Server error. Please try again later");
+  //     } else {
+  //       toast.error(error.message || "An unexpected error occured");
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
 
   const onSubmit = async ({ email, password }) => {
-    if (!email || !password) return;
-    setIsLoading(true);
+  if (!email || !password) return;
+  setIsLoading(true);
 
-    try {
-      const response = await apiRequest(API_ENDPOINTS.LOGIN, {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const response = await apiRequest(API_ENDPOINTS.LOGIN, {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
 
-      const userRole = response.role || response.user?.role || "user";
+    const userRole = response.role || "user";
+    const requiresOtp = response.requiresOtp ?? false;
 
-      if (response.requiresOtp) {
-        toast.success("Password valid. Please enter your TOTP code");
-        onShowTOTP(email, response.requiresOtp, userRole);
+    if (response.message?.includes("User registered successfully") && !response.isAuthenticated) {
+      toast.success("Account created successfully! Please scan the QR code");
+      onShowQR(email, response.qrCode, userRole);
+    }
+    else if (response.isAuthenticated && response.isRegistered && !requiresOtp && response.qrCode) {
+      toast.success("Please scan the QR code to setup 2FA");
+      onShowQR(email, response.qrCode, userRole);
+    }
+    else if (response.isAuthenticated && response.isRegistered && requiresOtp) {
+      toast.success("Password valid. Please enter your OTP");
+      onShowTOTP(email, requiresOtp, userRole);
+    }
+    else if (response.isAuthenticated && response.isRegistered && !requiresOtp) {
+      toast.success("Login successful");
+      onLogin(email, requiresOtp, userRole);
+    }
+    else if (!response.isAuthenticated && response.isRegistered && response.message?.includes("account is no longer active")) {
+      toast.error("Your account is no longer active. Please contact support if this is a mistake.");
+    }
+    else if (!response.isAuthenticated && response.isRegistered && response.message === "Invalid password") {
+      toast.error("Invalid password. Please try again");
+    }
+    else {
+      toast.error(response.message || "Unexpected response");
+    }
+
+  } catch (error) {
+    if (error.status === 400) {
+      if (error.message === "Password must be 9 characters") {
+        toast.error("Password must be exactly 9 characters long");
       } else {
-        toast.success("Login successful");
-        onLogin(email, "", response.requiresOtp, userRole);
-        onShowQR(email, response.qrCode, userRole);
-      }
-    } catch (error) {
-      if (error.message.includes("User not found")) {
-        try {
-          const registerResponse = await handleAutoRegister(email, password);
-          const newuserRole = "user";
-          toast.success("Account created! Please scan the QR code for 2FA");
-          onShowQR(email, registerResponse.qrCode, newuserRole);
-        } catch (error) {
-          toast.error(error.message);
-        }
-      } else if (error.message.includes("Invalid email or password")) {
-        toast.error("Invalid email or password");
-      }else {
         toast.error("Invalid request");
       }
-    } finally {
-      setIsLoading(false);
+    } else if (error.status === 401) {
+      if (error.message === "Email and Password are required fields") {
+        toast.error("Email and password are required");
+      } else {
+        toast.error("Authentication failed");
+      }
+    } else if (error.status === 404) {
+      toast.error("User not found");
+    } else if (error.status === 500) {
+      toast.error("Server error. Please try again later");
+    } else {
+      toast.error(error.message || "An unexpected error occurred");
     }
-  };
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div id="login-screen" className={`${styles.authCard} ${styles.active}`}>

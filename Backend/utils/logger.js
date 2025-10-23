@@ -1,24 +1,49 @@
-// utils/logger.js
+// const fs = require("fs");
+// const path = require("path");
+
+// const logsDir = path.join(__dirname, "../logs");
+// const logFile = path.join(logsDir, "logs.json");
+// const LOG_RETENTION_DAYS = 30;
+
+// // ✅ Ensure logs directory exists
+// function ensureLogsDirectory() {
+//   if (!fs.existsSync(logsDir)) {
+//     fs.mkdirSync(logsDir, { recursive: true });
+//   }
+// }
+
+// // ✅ Initialize log file if missing
+// function initializeLogFile() {
+//   if (!fs.existsSync(logFile)) {
+//     fs.writeFileSync(logFile, JSON.stringify([], null, 2));
+//   }
+// }
+
+
+
 const fs = require("fs");
 const path = require("path");
 
-const logsDir = path.join(__dirname, "../logs");
+// ✅ Determine persistent log directory
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "../data");
+const logsDir = path.join(DATA_DIR, "logs");
 const logFile = path.join(logsDir, "logs.json");
 const LOG_RETENTION_DAYS = 30;
 
-// ✅ Ensure logs directory exists
+// ✅ Ensure directory exists
 function ensureLogsDirectory() {
   if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
   }
 }
 
-// ✅ Initialize log file if missing
+// ✅ Initialize log file
 function initializeLogFile() {
   if (!fs.existsSync(logFile)) {
     fs.writeFileSync(logFile, JSON.stringify([], null, 2));
   }
 }
+
 
 // ✅ Append log entry
 async function appendLog(data) {

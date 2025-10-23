@@ -1,7 +1,7 @@
 const cors = require("cors");
 
 const corsMiddleware = cors({
-  origin: "*",
+  origin: "https://otpsharingapp.vercel.app/",
 });
 
 module.exports = corsMiddleware;

@@ -1,7 +1,8 @@
 const cors = require("cors");
+require("dotenv").config();
 
 const corsMiddleware = cors({
-  origin: "https://otpsharingapp.vercel.app/",
+  origin: process.env.CORS_URL,
 });
 
 module.exports = corsMiddleware;

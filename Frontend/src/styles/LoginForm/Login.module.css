@@ -200,16 +200,20 @@
   }
 }
 
-/* Autofill Fix */
-.formGroup input:-webkit-autofill {
-  background-color: var(--white-20) !important;
-  -webkit-box-shadow: 0 0 0 1000px var(--white-20) inset !important;
+.formGroup input:-webkit-autofill,
+.formGroup input:-webkit-autofill:hover,
+.formGroup input:-webkit-autofill:focus,
+.formGroup input:-webkit-autofill:active {
+  -webkit-background-clip: text;
   -webkit-text-fill-color: var(--white) !important;
-  transition: background-color 5000s ease-in-out 0s; /* Prevent yellow flash */
+  background-color: transparent !important;
+  transition: background-color 5000s ease-in-out 0s;
+  box-shadow: inset 0 0 20px 20px var(--white-20);
 }
 
-.formGroup input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--white-20) inset,
-    0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+.formGroup input:focus {
+  outline: none;
   border-color: var(--turquoise);
+  background: var(--white-20);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
 }

@@ -8,7 +8,13 @@ import FormInputField from "../ui/FormInputField";
 import UserManagementModal from "../modals/UserManagementModal";
 import UserManagementButton from "../ui/UserManagementButton";
 
-const GhlEmailScreen = ({ onRequestOTP, otp, onCopyOTP, userEmail, userRole }) => {
+const GhlEmailScreen = ({
+  onRequestOTP,
+  otp,
+  onCopyOTP,
+  userEmail,
+  userRole,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
   const methods = useForm();
@@ -29,8 +35,8 @@ const GhlEmailScreen = ({ onRequestOTP, otp, onCopyOTP, userEmail, userRole }) =
   return (
     <div className={styles.screenContainer}>
       {userRole === "admin" && (
-        <UserManagementButton 
-          userEmail={userEmail} 
+        <UserManagementButton
+          userEmail={userEmail}
           userRole={userRole}
           onOpenModal={() => setIsUserManagementOpen(true)}
         />
@@ -54,26 +60,20 @@ const GhlEmailScreen = ({ onRequestOTP, otp, onCopyOTP, userEmail, userRole }) =
               className={styles.authForm}
               onSubmit={methods.handleSubmit(onSubmit)}
             >
-              <div className={styles.formGroup}>
-                <label htmlFor="ghl-email" className={styles.formLabel}>
-                  Email Address
-                </label>
-                <div className={styles.inputField}>
-                  <i className="fas fa-envelope"></i>
-                  <FormInputField
-                    name={"email"}
-                    id={"ghl-email"}
-                    placeholder="Enter GHL email (without @etc.com)"
-                    rules={{
-                      required: "Email without @example.com required",
-                      pattern: {
-                        value: /^[a-zA-Z0-9+._-]+(@gmail\.com)?$/,
-                        message: "Enter without @example.com",
-                      },
-                    }}
-                  />
-                </div>
-              </div>
+              <FormInputField
+                label={"Email Address"}
+                icon="fas fa-envelope"
+                name={"email"}
+                id={"ghl-email"}
+                placeholder="Enter GHL email (without @etc.com)"
+                rules={{
+                  required: "Email without @example.com required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9+._-]+(@gmail\.com)?$/,
+                    message: "Enter without @example.com",
+                  },
+                }}
+              />
 
               {otp && (
                 <div className={styles.otpSection}>

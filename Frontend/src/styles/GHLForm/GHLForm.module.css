@@ -291,3 +291,22 @@ Copy button
 .copyBtn:hover {
   background: var(--turquoise);
 }
+
+.formGroup input:-webkit-autofill,
+.formGroup input:-webkit-autofill:hover,
+.formGroup input:-webkit-autofill:focus,
+.formGroup input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: var(--white) !important;
+  background-color: transparent !important;
+  transition: background-color 5000s ease-in-out 0s;
+  box-shadow: inset 0 0 20px 20px var(--white-20);
+}
+
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--turquoise);
+  background: var(--white-20);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}

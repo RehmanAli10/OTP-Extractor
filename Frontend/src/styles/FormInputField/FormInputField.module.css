@@ -1,0 +1,135 @@
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.formGroup label {
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 500;
+}
+.formGroup input {
+  background: var(--white-20);
+  border: 1px solid var(--white-20);
+  border-radius: 8px;
+  /* padding: 10px 20px 10px 40px; */
+  padding: 10px 40px 10px 40px;
+  color: var(--white);
+  font-size: 16px;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.formGroup input[type="password"],
+.formGroup input[type="text"] {
+  /* This covers when type changes to text */
+  padding: 10px 40px 10px 40px;
+}
+
+.formGroup input:not([type="password"]):not([type="text"]) {
+  padding: 10px 20px 10px 40px;
+}
+
+.formGroup input::placeholder {
+  color: var(--white-80);
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--turquoise);
+  background: var(--white-20);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.formGroup input.error {
+  border-color: var(--error-color);
+  box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
+}
+
+.inputField {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputField i:first-child {
+  position: absolute;
+  left: 12px;
+  color: var(--white-80);
+  font-size: 14px;
+  z-index: 1;
+  margin-top: 0;
+}
+
+.errorMessage {
+  color: var(--error-color);
+  font-size: 12px;
+  margin-top: 4px;
+  display: none;
+}
+
+.errorMessage.show {
+  display: block;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--white-80);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  transition: var(--transition);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.passwordToggle:hover {
+  color: var(--turquoise);
+  background: var(--white-10);
+  border-radius: 4px;
+}
+
+.formGroup input:-webkit-autofill {
+  background-color: var(--white-20) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--white-20);
+  -webkit-text-fill-color: var(--white);
+  transition: background-color 5000s ease-in-out 0s;
+
+  /* Added new line of code */
+  padding: 10px 40px 10px 40px !important;
+}
+
+.formGroup input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--white-20) inset,
+    0 0 0 3px rgba(0, 212, 255, 0.1);
+  border-color: var(--turquoise);
+  padding: 10px 40px 10px 40px !important;
+}
+
+/* Hide Chrome, Edge, and Safari default password reveal icon */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+
+/* Hide autofill icons by browser */
+input[type="password"]::-webkit-textfield-decoration-container > * {
+  display: none !important;
+}

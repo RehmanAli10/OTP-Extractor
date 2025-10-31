@@ -266,7 +266,7 @@ const UserManagementModal = ({ onClose }) => {
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        {/* Modal Header */}
+
         <div className={styles.modalHeader}>
           <div className={styles.headerTitle}>
             <i className="fas fa-users-cog"></i>
@@ -277,7 +277,6 @@ const UserManagementModal = ({ onClose }) => {
           </Button>
         </div>
 
-        {/* Quick Stats */}
         <div className={styles.statsContainer}>
           <div className={styles.statItem}>
             <span className={styles.statNumber}>{users.length}</span>
@@ -291,7 +290,6 @@ const UserManagementModal = ({ onClose }) => {
           </div>
         </div>
 
-        {/* Header Actions */}
         <div className={styles.headerActions}>
           <Button
             className={styles.addUserBtn}
@@ -302,7 +300,6 @@ const UserManagementModal = ({ onClose }) => {
           </Button>
         </div>
 
-        {/* Add User Form */}
         {showAddUser && (
           <div className={styles.addUserForm}>
             <div className={styles.formHeader}>
@@ -369,7 +366,6 @@ const UserManagementModal = ({ onClose }) => {
           </div>
         )}
 
-        {/* Users Table */}
         <div className={styles.usersSection}>
           <div className={styles.sectionHeader}>
             <h3>All Users ({users.length})</h3>
@@ -460,7 +456,6 @@ const UserManagementModal = ({ onClose }) => {
           </Loader>
         </div>
 
-        {/* Edit User Modal */}
         {editingUser && (
           <EditUserModal
             user={editingUser}
